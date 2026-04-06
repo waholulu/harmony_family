@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'export',
+  basePath: '/harmony_family',
+  assetPrefix: '/harmony_family',
+  images: { unoptimized: true },
 };
 
 export default nextConfig;

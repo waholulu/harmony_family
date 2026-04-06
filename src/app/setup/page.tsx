@@ -16,10 +16,10 @@ export default function SetupPage() {
     const handleStart = () => {
         if (!topic || !description) return;
 
-        // In a real app, this would create a room ID in the database.
-        // For MVP, we pass state via URL or use a mocked room ID.
         const roomId = "demo-room-123";
-        router.push(`/input/${roomId}?topic=${encodeURIComponent(topic)}&desc=${encodeURIComponent(description)}`);
+        sessionStorage.setItem(`harmony-topic-${roomId}`, topic);
+        sessionStorage.setItem(`harmony-desc-${roomId}`, description);
+        router.push(`/input/${roomId}`);
     };
 
     return (
