@@ -28,25 +28,47 @@ npm test         # Vitest (npm run test = vitest run)
 ```
 src/
 ├── app/
+│   ├── layout.tsx                    # Root layout (Inter font, global styles)
 │   ├── page.tsx                      # Onboarding (safety guarantees)
 │   ├── setup/page.tsx                # Conflict category + context
-│   ├── input/[roomId]/page.tsx       # Phase 1: Vent raw emotions → AI validation
-│   ├── reveal/[roomId]/page.tsx      # Phase 2: Iceberg Model (hidden needs)
-│   ├── rehearsal/[roomId]/page.tsx   # Phase 3: AI role-play chat (streaming)
-│   ├── review/[roomId]/page.tsx      # Phase 4: Summary + micro-actions
+│   ├── input/[roomId]/
+│   │   ├── page.tsx                  # Server component wrapper
+│   │   └── InputClient.tsx           # Phase 1: Vent raw emotions → AI validation
+│   ├── reveal/[roomId]/
+│   │   ├── page.tsx                  # Server component wrapper
+│   │   └── RevealClient.tsx          # Phase 2: Iceberg Model (hidden needs)
+│   ├── rehearsal/[roomId]/
+│   │   ├── page.tsx                  # Server component wrapper
+│   │   └── RehearsalClient.tsx       # Phase 3: AI role-play chat (streaming)
+│   ├── review/[roomId]/
+│   │   ├── page.tsx                  # Server component wrapper
+│   │   └── ReviewClient.tsx          # Phase 4: Summary + micro-actions
 │   └── api/
 │       ├── validate/route.ts         # generateText() → empathetic validation
 │       ├── reveal/route.ts           # generateObject() + Zod → structured needs
 │       └── chat/route.ts             # streamText() → role-play streaming
 ├── components/ui/                    # shadcn/ui primitives (Button, Card, Dialog, etc.)
-└── lib/utils.ts                      # cn() helper (clsx + tailwind-merge)
+└── lib/
+    ├── utils.ts                      # cn() helper (clsx + tailwind-merge)
+    └── ai-client.ts                  # Client-side mock AI (for static/GitHub Pages deployment)
 ```
+
+Each dynamic route uses a server component `page.tsx` that extracts `roomId` from params and renders a `*Client.tsx` client component (`"use client"`).
 
 ## App Flow
 
 `/ → /setup → /input/[roomId] → /reveal/[roomId] → /rehearsal/[roomId] → /review/[roomId]`
 
 Data passes between pages via `sessionStorage` with keys: `harmony-input-{roomId}`, `harmony-topic-{roomId}`, `harmony-desc-{roomId}`, `harmony-reveal-{roomId}`.
+
+### sessionStorage Schema
+
+| Key | Written by | Read by | Format |
+|-----|-----------|---------|--------|
+| `harmony-topic-{roomId}` | `/setup` | Phase 1, 2, 3, 4 | Plain string (conflict category) |
+| `harmony-desc-{roomId}` | `/setup` | Phase 1, 2 | Plain string (brief context) |
+| `harmony-input-{roomId}` | Phase 1 | Phase 2 | Plain string (raw vent text) |
+| `harmony-reveal-{roomId}` | Phase 2 | Phase 3, 4 | JSON `{ userNeeds: { surface, hidden, translation }, partnerNeeds: { surface, hidden, translation } }` |
 
 ## API Endpoints
 
@@ -77,9 +99,17 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_key_here
 
 ## Current Limitations (MVP)
 
-- No database — all data in sessionStorage
+- No database — all data in sessionStorage (no expiration)
 - Single-player simulation (dual-blind not truly implemented)
 - No authentication
-- Room ID is mocked (`demo-room-123`)
-- Share/export not implemented
+- Room ID is hardcoded (`demo-room-123` in `setup/page.tsx`) — only one session per browser
+- Share/export button exists in Phase 4 but has no onClick handler
 - No safety guardrails or risk detection yet
+- No back navigation between phases — user must complete all 4 phases to restart
+- Phase 3 (Rehearsal) does not pass Phase 2 (Reveal) data to the chat API — AI partner responses are generic
+- I-statement detection in Phase 1 uses a fragile regex heuristic instead of AI
+- `lib/ai-client.ts` provides mock fallbacks for static deployment but returns hardcoded responses
+
+## Known UX Issues
+
+See `docs/ux-flow-review.md` for the full UX audit with prioritized issues (P0/P1/P2) and a 3-sprint implementation plan.
