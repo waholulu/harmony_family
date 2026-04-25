@@ -67,7 +67,7 @@ export default function RevealClient(props: { params: Promise<{ roomId: string }
                 <div className="text-center space-y-2">
                     <h1 className="text-3xl font-bold tracking-tight text-zinc-900">The Iceberg Model</h1>
                     <p className="text-zinc-500 max-w-lg mx-auto">
-                        What we argue about is rarely what we are actually upset about. Here is what's really happening beneath the surface.
+                        What we argue about is rarely what we are actually upset about. Here is what&apos;s really happening beneath the surface.
                     </p>
                 </div>
 
@@ -117,12 +117,12 @@ export default function RevealClient(props: { params: Promise<{ roomId: string }
                     <CardHeader>
                         <CardTitle className="text-xl">Translated Message</CardTitle>
                         <CardDescription className="text-zinc-400">
-                            Notice how the blame is removed, focusing only on 'I' and a request for connection.
+                            Notice how the blame is removed, focusing only on &apos;I&apos; and a request for connection.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="pl-4 border-l-4 border-emerald-500 italic text-lg text-zinc-200">
-                            "{data.userNeeds.translation}"
+                            &quot;{data.userNeeds.translation}&quot;
                         </div>
                     </CardContent>
                     <CardFooter>

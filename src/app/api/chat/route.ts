@@ -57,10 +57,11 @@ RULES:
         });
 
         return result.toAIStreamResponse();
-    } catch (error: any) {
-        console.error("Chat API Error:", error.message || error);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("Chat API Error:", message);
 
-        const errorString = String(error.message || error).toLowerCase();
+        const errorString = message.toLowerCase();
         if (errorString.includes('quota') || errorString.includes('429') || errorString.includes('resource_exhausted') || errorString.includes('generaterequestsperminute')) {
             const encoder = new TextEncoder();
             const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -84,6 +85,6 @@ RULES:
             });
         }
 
-        return new Response(JSON.stringify({ error: error.message || "Failed to generate chat." }), { status: 500 });
+        return new Response(JSON.stringify({ error: message || "Failed to generate chat." }), { status: 500 });
     }
 }

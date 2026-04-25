@@ -51,11 +51,12 @@ Be highly empathetic and neutral. Avoid any blame.`,
         });
 
         return Response.json(object);
-    } catch (error: any) {
-        console.error("Reveal API Error:", error.message || error);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("Reveal API Error:", message);
 
         // Fallback for quota limits
-        const errorString = String(error.message || error).toLowerCase();
+        const errorString = message.toLowerCase();
         if (errorString.includes('quota') || errorString.includes('429') || errorString.includes('resource_exhausted') || errorString.includes('generaterequestsperminute')) {
             return Response.json({
                 userNeeds: {
@@ -71,6 +72,6 @@ Be highly empathetic and neutral. Avoid any blame.`,
             });
         }
 
-        return Response.json({ error: error.message || "Failed to generate reveal data." }, { status: 500 });
+        return Response.json({ error: message || "Failed to generate reveal data." }, { status: 500 });
     }
 }

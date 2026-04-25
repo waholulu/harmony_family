@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState, useCallback, useRef } from "react";
+import { use, useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,7 +17,6 @@ interface Message {
 export default function RehearsalClient(props: { params: Promise<{ roomId: string }> }) {
     const params = use(props.params);
     const router = useRouter();
-    const [topic, setTopic] = useState("");
     const [messages, setMessages] = useState<Message[]>([
         {
             id: "sys-welcome",
@@ -27,12 +26,12 @@ export default function RehearsalClient(props: { params: Promise<{ roomId: strin
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const streamingIdRef = useRef<string | null>(null);
+    const [streamingId, setStreamingId] = useState<string | null>(null);
 
-    useEffect(() => {
+    const topic = useMemo(() => {
+        if (typeof window === "undefined") return "";
         const savedTopic = sessionStorage.getItem(`harmony-topic-${params.roomId}`);
         const savedReveal = sessionStorage.getItem(`harmony-reveal-${params.roomId}`);
-        if (savedTopic) setTopic(savedTopic);
         if (savedReveal) {
             try {
                 JSON.parse(savedReveal); // validate JSON
@@ -40,6 +39,7 @@ export default function RehearsalClient(props: { params: Promise<{ roomId: strin
                 console.error(e);
             }
         }
+        return savedTopic || "";
     }, [params.roomId]);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +60,7 @@ export default function RehearsalClient(props: { params: Promise<{ roomId: strin
         setIsLoading(true);
 
         const assistantId = `assistant-${Date.now()}`;
-        streamingIdRef.current = assistantId;
+        setStreamingId(assistantId);
         setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
 
         await streamChat(
@@ -73,7 +73,7 @@ export default function RehearsalClient(props: { params: Promise<{ roomId: strin
             },
             () => {
                 setIsLoading(false);
-                streamingIdRef.current = null;
+                setStreamingId(null);
             }
         );
     }, [input, isLoading]);
@@ -120,7 +120,7 @@ export default function RehearsalClient(props: { params: Promise<{ roomId: strin
                                             ? "bg-amber-100 text-amber-900 rounded-bl-none text-sm font-medium border border-amber-200"
                                             : "bg-zinc-100 text-zinc-900 rounded-bl-none border border-zinc-200"
                                         }`}>
-                                        {mainContent || (isLoading && m.id === streamingIdRef.current ? "..." : "")}
+                                        {mainContent || (isLoading && m.id === streamingId ? "..." : "")}
                                     </div>
                                     {coachFeedback && !isUser && (
                                         <div className="mt-1 flex items-center bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded border border-purple-100 max-w-[80%]">

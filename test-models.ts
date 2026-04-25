@@ -8,12 +8,12 @@ async function main() {
     for (const modelName of ["gemini-2.5-pro", "models/gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-pro"]) {
         try {
             const { text } = await generateText({
-                model: google(modelName as any),
+                model: google(modelName),
                 prompt: "Say hello",
             });
             console.log(`SUCCESS [${modelName}]:`, text);
-        } catch (e: any) {
-            console.error(`ERROR [${modelName}]:`, e.message || e);
+        } catch (e: unknown) {
+            console.error(`ERROR [${modelName}]:`, e instanceof Error ? e.message : String(e));
         }
     }
 }

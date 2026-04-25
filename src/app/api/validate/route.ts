@@ -27,17 +27,18 @@ Keep it under 3 sentences. Be warm and human.`,
         });
 
         return Response.json({ validation: text });
-    } catch (error: any) {
-        console.error("Validate API Error:", error.message || error);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("Validate API Error:", message);
 
         // Fallback for quota limits
-        const errorString = String(error.message || error).toLowerCase();
+        const errorString = message.toLowerCase();
         if (errorString.includes('quota') || errorString.includes('429') || errorString.includes('resource_exhausted') || errorString.includes('generaterequestsperminute')) {
             return Response.json({
                 validation: "It sounds like you're feeling really frustrated. That's completely understandable. It's hard when you feel like you're not being heard. Take a deep breath, we are here to help untangle this.",
             });
         }
 
-        return Response.json({ error: error.message || "Failed to generate validation." }, { status: 500 });
+        return Response.json({ error: message || "Failed to generate validation." }, { status: 500 });
     }
 }

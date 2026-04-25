@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, use, useEffect } from "react";
+import { useState, use, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,7 +60,7 @@ export default function InputClient(props: Props) {
                     <CardHeader>
                         <CardTitle className="text-2xl">Phase 1: Vent</CardTitle>
                         <CardDescription>
-                            Don't hold back. Express exactly what's frustrating you regarding <strong>{topic}</strong>. The other person will <strong>never</strong> see these raw words.
+                            Don&apos;t hold back. Express exactly what&apos;s frustrating you regarding <strong>{topic}</strong>. The other person will <strong>never</strong> see these raw words.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -68,13 +68,13 @@ export default function InputClient(props: Props) {
                             placeholder="e.g. He always leaves his dirty socks on the floor and it drives me crazy!"
                             className="min-h-[150px] resize-none"
                             value={inputStr}
-                            onChange={(e: any) => setInputStr(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInputStr(e.target.value)}
                             disabled={validationMsg !== null || isLoading}
                         />
 
                         {isFactStatement && !validationMsg && !isLoading && (
                             <p className="text-sm text-amber-600 animate-in fade-in">
-                                Tip: This sounds like a fact. How does it make you <strong>feel</strong>? Try using an "I feel..." statement.
+                                Tip: This sounds like a fact. How does it make you <strong>feel</strong>? Try using an &quot;I feel...&quot; statement.
                             </p>
                         )}
 
