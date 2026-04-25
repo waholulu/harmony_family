@@ -9,11 +9,7 @@ export default function HomePage() {
   const router = useRouter();
 
   const handleStart = () => {
-    const roomId =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID().slice(0, 8)
-        : `${Date.now()}`;
-    router.push(`/mediate/${roomId}/a`);
+    router.push(`/mediate/demo-room-123/a`);
   };
 
   return (
